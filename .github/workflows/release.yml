@@ -1,0 +1,90 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        include:
+          - target: x86_64-unknown-linux-gnu
+            os: ubuntu-latest
+            name: parch-linux-x64
+          - target: x86_64-pc-windows-gnu
+            os: ubuntu-latest
+            name: parch-windows-x64.exe
+          - target: x86_64-pc-windows-msvc
+            os: windows-latest
+            name: parch-windows-x64-msvc.exe
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          toolchain: stable
+          targets: ${{ matrix.target }}
+
+      - name: Install cross-compilation tools (Linux)
+        if: matrix.os == 'ubuntu-latest' && contains(matrix.target, 'windows')
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y gcc-mingw-w64-x86-64
+
+      - name: Cache cargo
+        uses: Swatinem/rust-cache@v2
+        with:
+          key: ${{ matrix.target }}
+
+      - name: Build release
+        run: cargo build --release --target ${{ matrix.target }}
+
+      - name: Prepare artifact (Unix)
+        if: matrix.os != 'windows-latest'
+        run: |
+          mkdir -p artifacts
+          cp target/${{ matrix.target }}/release/parch* artifacts/${{ matrix.name }}
+
+      - name: Prepare artifact (Windows)
+        if: matrix.os == 'windows-latest'
+        run: |
+          mkdir artifacts
+          copy target\${{ matrix.target }}\release\parch.exe artifacts\${{ matrix.name }}
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.name }}
+          path: artifacts/${{ matrix.name }}
+
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+
+      - name: Flatten artifacts
+        run: |
+          mkdir -p release-artifacts
+          find artifacts -type f -exec cp {} release-artifacts/ \;
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          draft: true
+          generate_release_notes: true
+          files: release-artifacts/*

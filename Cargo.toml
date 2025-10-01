@@ -1,0 +1,25 @@
+[package]
+name = "parch"
+version = "0.0.0"
+edition = "2021"
+authors = ["signalbean"]
+description = "Fast, lightweight CLI tool to fetch and apply wallpapers from Konachan with cross-platform support"
+license = "MIT"
+repository = "https://github.com/signalbean/Parch"
+readme = "README.md"
+keywords = ["wallpaper", "image", "customization", "anime", "cli"]
+categories = ["command-line-utilities", "multimedia::images"]
+
+[dependencies]
+ureq = { version = "2.10", features = ["json"] }
+serde = { version = "1.0", features = ["derive"], default-features = false }
+
+[target.'cfg(windows)'.dependencies]
+winapi = { version = "0.3", features = ["winuser", "shellapi", "errhandlingapi"] }
+
+[profile.release]
+opt-level = 3
+lto = true
+codegen-units = 1
+strip = true
+panic = "abort"
