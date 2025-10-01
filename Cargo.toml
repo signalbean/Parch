@@ -1,6 +1,6 @@
 [package]
 name = "parch"
-version = "0.0.0"
+version = "0.1.0"
 edition = "2021"
 authors = ["signalbean"]
 description = "Fast, lightweight CLI tool to fetch and apply wallpapers from Konachan with cross-platform support"
