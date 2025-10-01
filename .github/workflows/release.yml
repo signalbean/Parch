@@ -15,15 +15,11 @@ jobs:
         include:
           - target: x86_64-unknown-linux-gnu
             os: ubuntu-latest
-            name: parch-linux-x64
+            name: parch
             binary: parch
-          - target: x86_64-pc-windows-gnu
-            os: ubuntu-latest
-            name: parch-windows-x64.exe
-            binary: parch.exe
           - target: x86_64-pc-windows-msvc
             os: windows-latest
-            name: parch-windows-x64-msvc.exe
+            name: parch.exe
             binary: parch.exe
 
     runs-on: ${{ matrix.os }}

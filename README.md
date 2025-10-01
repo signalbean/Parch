@@ -16,8 +16,10 @@ A fast, lightweight CLI tool to fetch and apply wallpapers from Konachan. Built 
 
 Download the latest binary for your platform from the [releases page](https://github.com/signalbean/Parch/releases/latest):
 
-- **Windows**: `parch-windows-x64.exe` or `parch-windows-x64-msvc.exe`
-- **Linux**: `parch-linux-x64`
+- **Windows**: `parch.exe`
+- **Linux**: `parch`
+
+Don't forget to stick it in the PATH for faster usage
 
 ### From Source
 
@@ -129,19 +131,6 @@ cd Parch
 cargo build --release
 
 # The binary will be available at target/release/parch
-```
-
-### Cross-compilation for Windows (from Linux)
-
-```bash
-# Install cross-compilation tools
-sudo apt-get install gcc-mingw-w64-x86-64
-
-# Add Windows target
-rustup target add x86_64-pc-windows-gnu
-
-# Build for Windows
-cargo build --release --target x86_64-pc-windows-gnu
 ```
 
 ## 🤝 Contributing
