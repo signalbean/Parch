@@ -1,14 +1,13 @@
 [package]
 name = "parch"
 version = "0.1.1"
-edition = "2021"
+edition = "2024"
 authors = ["signalbean"]
 description = "Fast, lightweight CLI tool to fetch and apply wallpapers from Konachan with cross-platform support"
-license = "MIT"
+license = "MIT OR Apache-2.0"
 repository = "https://github.com/signalbean/Parch"
 readme = "README.md"
-keywords = ["wallpaper", "image", "customization", "anime", "cli"]
-categories = ["command-line-utilities", "multimedia::images"]
+keywords = ["wallpaper", "image", "customization", "cli"]
 
 [dependencies]
 ureq = { version = "2.10", features = ["json"] }
