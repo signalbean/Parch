@@ -53,7 +53,8 @@ jobs:
         if: matrix.os != 'windows-latest'
         run: |
           mkdir -p artifacts
-          cp target/${{ matrix.target }}/release/parch* artifacts/${{ matrix.name }}
+          ls -la target/${{ matrix.target }}/release/
+          cp target/${{ matrix.target }}/release/parch artifacts/${{ matrix.name }}
 
       - name: Prepare artifact (Windows)
         if: matrix.os == 'windows-latest'
