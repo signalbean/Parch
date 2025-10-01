@@ -52,7 +52,8 @@ jobs:
       - name: Build release
         run: cargo build --release --target ${{ matrix.target }}
 
-      - name: Debug - List build output
+      - name: Debug - List build output (Unix)
+        if: matrix.os != 'windows-latest'
         run: |
           echo "Listing target directory:"
           ls -la target/
@@ -60,6 +61,16 @@ jobs:
           ls -la target/${{ matrix.target }}/
           echo "Listing target/${{ matrix.target }}/release:"
           ls -la target/${{ matrix.target }}/release/
+
+      - name: Debug - List build output (Windows)
+        if: matrix.os == 'windows-latest'
+        run: |
+          Write-Host "Listing target directory:"
+          Get-ChildItem target\ -Force
+          Write-Host "Listing target\${{ matrix.target }}:"
+          Get-ChildItem target\${{ matrix.target }}\ -Force
+          Write-Host "Listing target\${{ matrix.target }}\release:"
+          Get-ChildItem target\${{ matrix.target }}\release\ -Force
 
       - name: Prepare artifact (Unix)
         if: matrix.os != 'windows-latest'
@@ -85,14 +96,17 @@ jobs:
             exit 1
           }
 
-      - name: Verify artifact
+      - name: Verify artifact (Unix)
+        if: matrix.os != 'windows-latest'
         run: |
           echo "Verifying artifact exists:"
-          if [ "${{ matrix.os }}" = "windows-latest" ]; then
-            ls -la artifacts/
-          else
-            ls -la artifacts/
-          fi
+          ls -la artifacts/
+
+      - name: Verify artifact (Windows)
+        if: matrix.os == 'windows-latest'
+        run: |
+          Write-Host "Verifying artifact exists:"
+          Get-ChildItem artifacts\ -Force
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
@@ -110,16 +124,11 @@ jobs:
         with:
           path: artifacts
 
-      - name: Debug - List downloaded artifacts
-        run: |
-          echo "Downloaded artifacts:"
-          find artifacts -type f -ls
-
       - name: Flatten artifacts
         run: |
           mkdir -p release-artifacts
           find artifacts -type f -exec cp {} release-artifacts/ \;
-          echo "Flattened artifacts:"
+          echo "Release artifacts ready:"
           ls -la release-artifacts/
 
       - name: Create GitHub Release
