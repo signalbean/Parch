@@ -10,36 +10,7 @@ A fast, lightweight CLI tool to fetch and apply wallpapers from Konachan. Built 
 - **Safe & NSFW Content**: Separate handling and storage for different content ratings
 - **Minimal Dependencies**: Streamlined codebase with only essential dependencies
 
-## 🚀 Installation
-
-### From Releases (Recommended)
-
-Download the latest binary for your platform from the [releases page](https://github.com/signalbean/Parch/releases/latest):
-
-- **Windows**: `parch.exe`
-- **Linux**: `parch`
-
-Don't forget to stick it in the PATH for faster usage
-
-### From Source
-
-```bash
-# Install Rust if you haven't already
-curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
-
-# Install parch
-cargo install parch
-```
-
-### From Crates.io
-
-```bash
-cargo install parch
-```
-
-## 📖 Usage
-
-### Basic Commands
+## 🚀 Quick Start
 
 ```bash
 # Fetch and apply random SFW wallpaper
@@ -50,97 +21,51 @@ parch nsfw
 
 # Download specific post by ID
 parch id 123456
-
-# Enable verbose output for debugging
-parch sfw -V
 ```
 
-### Help & Information
+## 📚 Documentation
 
+- **[Installation Guide](docs/INSTALLATION.md)** - Detailed installation instructions for all platforms
+- **[Usage Guide](docs/USAGE.md)** - Complete command reference and tips
+- **[Platform Support](docs/PLATFORM_SUPPORT.md)** - Platform-specific details and troubleshooting
+- **[Contributing](CONTRIBUTING.md)** - Guidelines for contributors
+
+## 📦 Installation
+
+### Quick Install
+
+**From Releases** (Recommended):
+- Download the latest binary for your platform from the [releases page](https://github.com/signalbean/Parch/releases/latest)
+- Add to PATH for easy access
+
+**From Crates.io**:
 ```bash
-# Show help
-parch help
-parch -h
-
-# Show version
-parch version
-parch -v
+cargo install parch
 ```
 
-## 📁 Storage Locations
-
-Wallpapers are automatically organized and saved to:
-
-### Windows
-```
-%USERPROFILE%\Pictures\Parch\          # SFW wallpapers
-%USERPROFILE%\Pictures\Parch\Nsfw\     # NSFW wallpapers
-```
-
-### Linux
-```
-~/Pictures/Parch/          # SFW wallpapers
-~/Pictures/Parch/Nsfw/     # NSFW wallpapers
-```
-
-Files are named using their Konachan post ID (e.g., `123456.jpg`)
+See the [Installation Guide](docs/INSTALLATION.md) for detailed instructions.
 
 ## 🖥️ Platform Support
 
-### Windows (10, 11)
-- **Native API**: Uses Windows SystemParametersInfo API for instant wallpaper changes
-- **No external dependencies required**
+- ✅ **Windows 10/11** - Native API support
+- ✅ **Linux (KDE Plasma)** - Full support
+- ✅ **Linux (GNOME)** - Full support  
+- ✅ **Linux (i3, bspwm, etc.)** - Via `feh`
 
-### Linux
-- **KDE Plasma**: Automatic detection and use of `qdbus`, `qdbus-qt5`, or `qdbus6`
-- **GNOME**: Uses `gsettings` for wallpaper management
-- **Generic X11/Wayland**: Falls back to `feh` for window managers
-- **Automatic detection**: Tries methods in order of preference
-
-## ⚡ Performance Optimizations
-
-- **Minimal binary size**: Optimized build configuration with LTO and strip
-- **Reduced dependencies**: Only essential crates for core functionality
-- **Efficient networking**: Streamlined HTTP client without unnecessary features
-- **Fast argument parsing**: Optimized CLI parsing for quick startup
-- **Memory efficient**: Minimal allocations and smart string handling
-
-## 🏗️ Project Structure
-
-```
-Parch/
-├── src/
-│   ├── main.rs          # Entry point and orchestration
-│   ├── cli.rs           # Command-line argument parsing
-│   ├── api.rs           # Konachan API interaction
-│   ├── download.rs      # Image downloading and storage
-│   └── wallpaper.rs     # Cross-platform wallpaper setting
-├── .github/workflows/   # CI/CD and release automation
-├── Cargo.toml          # Project configuration
-└── README.md           # This file
-```
-
-## 🔧 Building from Source
-
-```bash
-# Clone the repository
-git clone https://github.com/signalbean/Parch.git
-cd Parch
-
-# Build optimized release binary
-cargo build --release
-
-# The binary will be available at target/release/parch
-```
+See [Platform Support](docs/PLATFORM_SUPPORT.md) for details.
 
 ## 🤝 Contributing
 
-Contributions are welcome! Please feel free to submit issues or pull requests.
+Contributions are welcome! Please read our [Contributing Guidelines](CONTRIBUTING.md) before submitting PRs.
 
 ## 📄 License
 
 MIT License - see [LICENSE](LICENSE) file for details.
 
+## ⚠️ Content Notice
+
+This tool fetches content from Konachan. Please be mindful of content ratings and use appropriate flags for your environment.
+
 ---
 
-**Note**: This tool fetches content from Konachan. Please be mindful of the content ratings and use appropriate flags for your environment.
+**Made with ❤️ and Rust**
