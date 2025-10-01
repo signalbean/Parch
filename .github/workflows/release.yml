@@ -16,12 +16,15 @@ jobs:
           - target: x86_64-unknown-linux-gnu
             os: ubuntu-latest
             name: parch-linux-x64
+            binary: parch
           - target: x86_64-pc-windows-gnu
             os: ubuntu-latest
             name: parch-windows-x64.exe
+            binary: parch.exe
           - target: x86_64-pc-windows-msvc
             os: windows-latest
             name: parch-windows-x64-msvc.exe
+            binary: parch.exe
 
     runs-on: ${{ matrix.os }}
 
@@ -49,18 +52,47 @@ jobs:
       - name: Build release
         run: cargo build --release --target ${{ matrix.target }}
 
+      - name: Debug - List build output
+        run: |
+          echo "Listing target directory:"
+          ls -la target/
+          echo "Listing target/${{ matrix.target }}:"
+          ls -la target/${{ matrix.target }}/
+          echo "Listing target/${{ matrix.target }}/release:"
+          ls -la target/${{ matrix.target }}/release/
+
       - name: Prepare artifact (Unix)
         if: matrix.os != 'windows-latest'
         run: |
           mkdir -p artifacts
-          ls -la target/${{ matrix.target }}/release/
-          cp target/${{ matrix.target }}/release/parch artifacts/${{ matrix.name }}
+          if [ -f "target/${{ matrix.target }}/release/${{ matrix.binary }}" ]; then
+            cp target/${{ matrix.target }}/release/${{ matrix.binary }} artifacts/${{ matrix.name }}
+            echo "Successfully copied binary to artifacts/${{ matrix.name }}"
+          else
+            echo "Error: Binary not found at target/${{ matrix.target }}/release/${{ matrix.binary }}"
+            exit 1
+          fi
 
       - name: Prepare artifact (Windows)
         if: matrix.os == 'windows-latest'
         run: |
           mkdir artifacts
-          copy target\${{ matrix.target }}\release\parch.exe artifacts\${{ matrix.name }}
+          if (Test-Path "target\${{ matrix.target }}\release\${{ matrix.binary }}") {
+            Copy-Item "target\${{ matrix.target }}\release\${{ matrix.binary }}" "artifacts\${{ matrix.name }}"
+            Write-Host "Successfully copied binary to artifacts\${{ matrix.name }}"
+          } else {
+            Write-Host "Error: Binary not found at target\${{ matrix.target }}\release\${{ matrix.binary }}"
+            exit 1
+          }
+
+      - name: Verify artifact
+        run: |
+          echo "Verifying artifact exists:"
+          if [ "${{ matrix.os }}" = "windows-latest" ]; then
+            ls -la artifacts/
+          else
+            ls -la artifacts/
+          fi
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
@@ -78,10 +110,17 @@ jobs:
         with:
           path: artifacts
 
+      - name: Debug - List downloaded artifacts
+        run: |
+          echo "Downloaded artifacts:"
+          find artifacts -type f -ls
+
       - name: Flatten artifacts
         run: |
           mkdir -p release-artifacts
           find artifacts -type f -exec cp {} release-artifacts/ \;
+          echo "Flattened artifacts:"
+          ls -la release-artifacts/
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
