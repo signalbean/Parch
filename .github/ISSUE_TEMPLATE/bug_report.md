@@ -25,5 +25,5 @@ What went wrong? (short & clean)
 - Rust: `rustc --version` (if applicable)
 
 ## Error / Verbose Output
-```bash
+
 Paste logs or error here
