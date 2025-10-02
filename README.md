@@ -1,16 +1,13 @@
 # Parch
 
 A fast CLI for fetching and applying wallpapers from Konachan.
-Built with Rust → lightweight.
+Built with Rust.
 
 ## ✨ Features
 
 * **Cross-platform**: Windows 10/11 & Linux
-* **Snappy & lightweight**: Minimal overhead, instant execution
-* **Smart wallpaper setting**: Auto-detects the best method
 * **Local mode**: Offline wallpapers from your `Parch` folder
 * **Rating aware**: SFW & NSFW handled separately
-* **Minimal deps**: Just what’s needed-no bloat
 
 ## 🚀 Quick Start
 
@@ -38,12 +35,6 @@ Download the latest binary [here](https://github.com/signalbean/Parch/releases/l
 ```bash
 cargo install parch
 ```
-
-## 🖥️ Supported Platforms
-
-* ✅ Windows 10/11
-* ✅ Linux (KDE, GNOME)
-* ✅ Linux tiling WMs (i3, bspwm, etc. via `feh`)
 
 ## 📄 License
 
