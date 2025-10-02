@@ -67,7 +67,7 @@ pub fn parse() -> Result<Args, String> {
         return Err("Cannot use local with id".into());
     }
 
-    if !local && id.is_none() && !nsfw && !sfw {
+    if id.is_none() && !nsfw && !sfw {
         return Err("Please provide a post ID with id or a type sfw/nsfw".into());
     }
 
@@ -87,7 +87,7 @@ fn print_help() {
     println!("OPTIONS:");
     println!("    sfw                  Fetch SFW images");
     println!("    nsfw                 Fetch NSFW images");
-    println!("    local <type>         Use image from a local folder");
+    println!("    local [type]         Use image from a local folder (sfw/nsfw)");
     println!("    id <ID>              Fetch specific post");
     println!("    -V, verbose          Verbose output");
     println!("    -h, help             Show help");
