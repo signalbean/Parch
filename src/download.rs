@@ -57,7 +57,6 @@ fn dir_path(nsfw: bool) -> Result<PathBuf> {
 
     path.push("Pictures");
     path.push("Parch");
-
     if nsfw {
         path.push("Nsfw");
     }

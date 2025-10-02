@@ -50,7 +50,7 @@ pub fn parse() -> Result<Args, String> {
     }
 
     if id.is_none() && !nsfw && !sfw {
-        return Err("Please specify either a post ID with id or a category with sfw / nsfw".into());
+        return Err("Please provide a post ID with id or a category with sfw / nsfw".into());
     }
 
     Ok(Args { nsfw, id, verbose })
