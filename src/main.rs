@@ -2,6 +2,7 @@ mod api;
 mod cli;
 mod download;
 mod local;
+mod paths;
 mod wallpaper;
 
 fn main() {
@@ -15,29 +16,21 @@ fn run() -> Result<(), String> {
     let args = cli::parse()?;
 
     let path = if args.local {
-        // Use local wallpaper
         local::get_random(args.nsfw, args.verbose)?
     } else {
-        // Fetch from Konachan
-        let post = api::fetch(&args)?;
+        let post = api::fetch(args.id, args.nsfw, args.verbose)?;
         let url = api::image_url(&post)?;
-        let full_url = if url.starts_with("//") {
-            format!("https:{}", url)
-        } else if !url.starts_with("http") {
-            format!("https://{}", url)
-        } else {
-            url.to_string()
-        };
-
-        download::save(post.id, &full_url, post.rating == "e", args.verbose)?
+        download::save(post.id, &url, post.rating == "e", args.verbose)?
     };
 
     wallpaper::set(&path, args.verbose)?;
-
-    if args.verbose {
-        println!("✓ Wallpaper set successfully.");
-    } else {
-        println!("✓ Applied!");
-    }
+    println!(
+        "{}",
+        if args.verbose {
+            "✓ Wallpaper set successfully."
+        } else {
+            "✓ Applied!"
+        }
+    );
     Ok(())
 }

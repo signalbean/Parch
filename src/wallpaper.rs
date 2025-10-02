@@ -22,39 +22,64 @@ pub fn set(path: &Path, verbose: bool) -> Result<(), String> {
         if verbose {
             println!("→ Using Windows API");
         }
-        return windows_set(path);
+        let wide: Vec<u16> = OsStr::new(path)
+            .encode_wide()
+            .chain(std::iter::once(0))
+            .collect();
+        unsafe {
+            if SystemParametersInfoW(
+                SPI_SETDESKWALLPAPER,
+                0,
+                wide.as_ptr() as *mut _,
+                SPIF_UPDATEINIFILE | SPIF_SENDCHANGE,
+            ) == 0
+            {
+                return Err("Failed to set wallpaper".into());
+            }
+        }
+        return Ok(());
     }
 
     #[cfg(not(windows))]
     {
-        let path_str = path.to_string_lossy();
+        let p = path.to_string_lossy();
+        let uri = format!(
+            "file://{}",
+            if let Some(stripped) = p.strip_prefix("file://") {
+                stripped
+            } else {
+                &p
+            }
+        );
 
-        // Try KDE
-        if let Some(qdbus) = find(&["qdbus", "qdbus-qt5", "qdbus6"]) {
+        if let Some(q) = find(&["qdbus", "qdbus-qt5", "qdbus6"]) {
             if verbose {
-                println!("→ Using KDE Plasma ({})", qdbus);
+                println!("→ Using KDE Plasma ({})", q);
             }
-            if kde(&qdbus, &path_str).is_ok() {
-                return Ok(());
-            }
+            if run(&q, &["org.kde.plasmashell", "/PlasmaShell", "org.kde.PlasmaShell.evaluateScript",
+                &format!("var d=desktops();for(i=0;i<d.length;i++){{d[i].wallpaperPlugin=\"org.kde.image\";d[i].currentConfigGroup=[\"Wallpaper\",\"org.kde.image\",\"General\"];d[i].writeConfig(\"Image\",\"{}\")}}", uri)
+            ]).is_ok() { return Ok(()); }
         }
 
-        // Try GNOME
         if exists("gsettings") {
             if verbose {
                 println!("→ Using GNOME");
             }
-            if gnome(&path_str).is_ok() {
+            if run(
+                "gsettings",
+                &["set", "org.gnome.desktop.background", "picture-uri", &uri],
+            )
+            .is_ok()
+            {
                 return Ok(());
             }
         }
 
-        // Try feh
         if exists("feh") {
             if verbose {
                 println!("→ Using feh");
             }
-            if feh(&path_str).is_ok() {
+            if run("feh", &["--bg-fill", &p]).is_ok() {
                 return Ok(());
             }
         }
@@ -63,86 +88,10 @@ pub fn set(path: &Path, verbose: bool) -> Result<(), String> {
     }
 }
 
-#[cfg(windows)]
-fn windows_set(path: &Path) -> Result<(), String> {
-    let path_wide: Vec<u16> = OsStr::new(path)
-        .encode_wide()
-        .chain(std::iter::once(0))
-        .collect();
-
-    unsafe {
-        if SystemParametersInfoW(
-            SPI_SETDESKWALLPAPER,
-            0,
-            path_wide.as_ptr() as *mut _,
-            SPIF_UPDATEINIFILE | SPIF_SENDCHANGE,
-        ) == 0
-        {
-            Err("Failed to set wallpaper".into())
-        } else {
-            Ok(())
-        }
-    }
-}
-
 #[cfg(not(windows))]
-fn kde(qdbus: &str, path: &str) -> Result<(), String> {
-    let uri = if path.starts_with("file://") {
-        path.to_string()
-    } else {
-        format!("file://{}", path)
-    };
-
-    let script = format!(
-        "var d=desktops();for(i=0;i<d.length;i++){{d[i].wallpaperPlugin=\"org.kde.image\";\
-         d[i].currentConfigGroup=[\"Wallpaper\",\"org.kde.image\",\"General\"];\
-         d[i].writeConfig(\"Image\",\"{}\")}}",
-        uri
-    );
-
-    Command::new(qdbus)
-        .args([
-            "org.kde.plasmashell",
-            "/PlasmaShell",
-            "org.kde.PlasmaShell.evaluateScript",
-            &script,
-        ])
-        .status()
-        .map_err(|e| e.to_string())
-        .and_then(|s| {
-            if s.success() {
-                Ok(())
-            } else {
-                Err("Failed".into())
-            }
-        })
-}
-
-#[cfg(not(windows))]
-fn gnome(path: &str) -> Result<(), String> {
-    let uri = if path.starts_with("file://") {
-        path.to_string()
-    } else {
-        format!("file://{}", path)
-    };
-
-    Command::new("gsettings")
-        .args(["set", "org.gnome.desktop.background", "picture-uri", &uri])
-        .status()
-        .map_err(|e| e.to_string())
-        .and_then(|s| {
-            if s.success() {
-                Ok(())
-            } else {
-                Err("Failed".into())
-            }
-        })
-}
-
-#[cfg(not(windows))]
-fn feh(path: &str) -> Result<(), String> {
-    Command::new("feh")
-        .args(["--bg-fill", path])
+fn run(cmd: &str, args: &[&str]) -> Result<(), String> {
+    Command::new(cmd)
+        .args(args)
         .status()
         .map_err(|e| e.to_string())
         .and_then(|s| {
