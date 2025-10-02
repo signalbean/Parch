@@ -21,22 +21,12 @@ parch sfw
 # Random NSFW wallpaper
 parch nsfw
 
-# Local random (mixed)
-parch local
-
 # Local random (SFW only)
 parch local sfw
 
 # Fetch by ID
 parch id 123456
 ```
-
-## 📚 Docs
-
-* [Install](docs/installation.md)
-* [Usage](docs/usage.md)
-* [Platform Support](docs/platform-support.md)
-* [Contributing](docs/contributing.md)
 
 ## 📦 Install
 
@@ -54,12 +44,6 @@ cargo install parch
 * ✅ Windows 10/11
 * ✅ Linux (KDE, GNOME)
 * ✅ Linux tiling WMs (i3, bspwm, etc. via `feh`)
-
-See [Platform Support](docs/platform-support.md) for more.
-
-## 🤝 Contributing
-
-PRs welcome! Check [conrtibuting.md](docs/contributing.md).
 
 ## 📄 License
 
