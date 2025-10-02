@@ -67,7 +67,7 @@ MIT - see [LICENSE](LICENSE).
 
 ## ⚠️ Content Notice
 
-Parch pulls from Konachan. Ratings matter-use flags responsibly.
+Parch pulls from Konachan. Ratings matter - use flags responsibly.
 
 ---
 
