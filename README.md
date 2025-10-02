@@ -1,78 +1,74 @@
 # Parch
 
-A fast, lightweight CLI tool to fetch and apply wallpapers from Konachan. Built with Rust for optimal performance and cross-platform compatibility.
+A fast CLI for fetching and applying wallpapers from Konachan.
+Built with Rust → lightweight, cross-platform, zero-nonsense.
 
 ## ✨ Features
 
-- **Cross-platform**: Native support for Windows 10/11 and Linux
-- **Fast & Lightweight**: Optimized for minimal resource usage and quick execution
-- **Smart Wallpaper Setting**: Automatically detects and uses the best available method
-- **Local Mode**: Use random wallpapers from your downloaded collection (offline support)
-- **Safe & NSFW Content**: Separate handling and storage for different content ratings
-- **Minimal Dependencies**: Streamlined codebase with only essential dependencies
+* **Cross-platform**: Windows 10/11 & Linux
+* **Snappy & lightweight**: Minimal overhead, instant execution
+* **Smart wallpaper setting**: Auto-detects the best method
+* **Local mode**: Offline wallpapers from your `Parch` folder
+* **Rating aware**: SFW & NSFW handled separately
+* **Minimal deps**: Just what’s needed-no bloat
 
 ## 🚀 Quick Start
 
 ```bash
-# Fetch and apply random SFW wallpaper
+# Random SFW wallpaper
 parch sfw
 
-# Fetch and apply random NSFW wallpaper
+# Random NSFW wallpaper
 parch nsfw
 
-# Use random wallpaper from any local collection (no internet required)
+# Local random (mixed)
 parch local
 
-# Use random local SFW wallpaper
+# Local random (SFW only)
 parch local sfw
 
-# Download specific post by ID
+# Fetch by ID
 parch id 123456
 ```
 
-## 📚 Documentation
+## 📚 Docs
 
-- **[Installation Guide](docs/installation.md)** - Detailed installation instructions for all platforms
-- **[Usage Guide](docs/usage.md)** - Complete command reference and tips
-- **[Platform Support](docs/platform-support.md)** - Platform-specific details and troubleshooting
-- **[Contributing](CONTRIBUTING.md)** - Guidelines for contributors
+* [Install](docs/installation.md)
+* [Usage](docs/usage.md)
+* [Platform Support](docs/platform-support.md)
+* [Contributing](CONTRIBUTING.md)
 
-## 📦 Installation
+## 📦 Install
 
-### Quick Install
+**Releases (recommended):**
+Download the latest binary [here](https://github.com/signalbean/Parch/releases/latest) and add it to your PATH.
 
-**From Releases** (Recommended):
-- Download the latest binary for your platform from the [releases page](https://github.com/signalbean/Parch/releases/latest)
-- Add to PATH for easy access
+**Cargo:**
 
-**From Crates.io**:
 ```bash
 cargo install parch
 ```
 
-See the [Installation Guide](docs/installation.md) for detailed instructions.
+## 🖥️ Supported Platforms
 
-## 🖥️ Platform Support
+* ✅ Windows 10/11
+* ✅ Linux (KDE, GNOME)
+* ✅ Linux tiling WMs (i3, bspwm, etc. via `feh`)
 
-- ✅ **Windows 10/11** - Native API support
-- ✅ **Linux (KDE Plasma)** - Full support
-- ✅ **Linux (GNOME)** - Full support  
-- ✅ **Linux (i3, bspwm, etc.)** - Via `feh`
-
-See [Platform Support](docs/platform-support.md) for details.
+See [Platform Support](docs/platform-support.md) for more.
 
 ## 🤝 Contributing
 
-Contributions are welcome! Please read our [Contributing Guidelines](CONTRIBUTING.md) before submitting PRs.
+PRs welcome! Check [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## 📄 License
 
-MIT License - see [LICENSE](LICENSE) file for details.
+MIT - see [LICENSE](LICENSE).
 
 ## ⚠️ Content Notice
 
-This tool fetches content from Konachan. Please be mindful of content ratings and use appropriate flags for your environment.
+Parch pulls from Konachan. Ratings matter—use flags responsibly.
 
 ---
 
-**Made with ❤️ and Rust**
+**Made with ❤️ in Rust**
