@@ -25,9 +25,9 @@ parch id 123456
 
 ## 📚 Documentation
 
-- **[Installation Guide](docs/INSTALLATION.md)** - Detailed installation instructions for all platforms
-- **[Usage Guide](docs/USAGE.md)** - Complete command reference and tips
-- **[Platform Support](docs/PLATFORM_SUPPORT.md)** - Platform-specific details and troubleshooting
+- **[Installation Guide](docs/installation.md)** - Detailed installation instructions for all platforms
+- **[Usage Guide](docs/usage.md)** - Complete command reference and tips
+- **[Platform Support](docs/platform-support.md)** - Platform-specific details and troubleshooting
 - **[Contributing](CONTRIBUTING.md)** - Guidelines for contributors
 
 ## 📦 Installation
@@ -43,7 +43,7 @@ parch id 123456
 cargo install parch
 ```
 
-See the [Installation Guide](docs/INSTALLATION.md) for detailed instructions.
+See the [Installation Guide](docs/installation.md) for detailed instructions.
 
 ## 🖥️ Platform Support
 
@@ -52,7 +52,7 @@ See the [Installation Guide](docs/INSTALLATION.md) for detailed instructions.
 - ✅ **Linux (GNOME)** - Full support  
 - ✅ **Linux (i3, bspwm, etc.)** - Via `feh`
 
-See [Platform Support](docs/PLATFORM_SUPPORT.md) for details.
+See [Platform Support](docs/platform-support.md) for details.
 
 ## 🤝 Contributing
 
