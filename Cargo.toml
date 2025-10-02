@@ -3,18 +3,19 @@ name = "parch"
 version = "0.2.2"
 edition = "2024"
 authors = ["signalbean"]
-description = "Fast, lightweight CLI tool to fetch and apply wallpapers from Konachan with cross-platform support"
+description = "Fast, lightweight CLI tool to fetch and apply wallpapers from Konachan"
 license = "MIT OR Apache-2.0"
 repository = "https://github.com/signalbean/Parch"
 readme = "README.md"
 keywords = ["wallpaper", "image", "customization", "cli"]
 
 [dependencies]
-ureq = { version = "2.10", features = ["json"] }
-serde = { version = "1.0", features = ["derive"], default-features = false }
+ureq = { version = "3.1.2", features = ["json"] }
+serde = { version = "1.0.228", features = ["derive"] }
+serde_json = "1.0.145"
 
 [target.'cfg(windows)'.dependencies]
-winapi = { version = "0.3", features = ["winuser", "shellapi", "errhandlingapi"] }
+winapi = { version = "0.3.9", features = ["winuser", "shellapi", "errhandlingapi"] }
 
 [profile.release]
 opt-level = 3

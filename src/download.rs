@@ -22,12 +22,12 @@ pub fn save(id: u64, url: &str, nsfw: bool, verbose: bool) -> Result<PathBuf> {
     }
 
     let resp = ureq::get(url)
-        .set("User-Agent", "parch")
+        .header("User-Agent", "parch")
         .call()
         .map_err(|e| format!("Download failed: {}", e))?;
 
     let mut file = File::create(&dest)?;
-    let bytes = copy(&mut resp.into_reader(), &mut file)?;
+    let bytes = copy(&mut resp.into_body().into_reader(), &mut file)?;
 
     if bytes == 0 {
         return Err("Empty file".into());

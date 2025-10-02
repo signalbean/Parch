@@ -29,11 +29,12 @@ pub fn fetch(args: &Args) -> Result<Post> {
     };
 
     let resp = ureq::get(&url)
-        .set("User-Agent", "parch")
+        .header("User-Agent", "parch")
         .call()
         .map_err(|e| format!("Request failed: {}", e))?;
 
-    let posts: Vec<Post> = resp.into_json()?;
+    let text = resp.into_body().read_to_string()?;
+    let posts: Vec<Post> = serde_json::from_str(&text)?;
 
     posts
         .into_iter()
