@@ -7,6 +7,7 @@ A fast, lightweight CLI tool to fetch and apply wallpapers from Konachan. Built 
 - **Cross-platform**: Native support for Windows 10/11 and Linux
 - **Fast & Lightweight**: Optimized for minimal resource usage and quick execution
 - **Smart Wallpaper Setting**: Automatically detects and uses the best available method
+- **Local Mode**: Use random wallpapers from your downloaded collection (offline support)
 - **Safe & NSFW Content**: Separate handling and storage for different content ratings
 - **Minimal Dependencies**: Streamlined codebase with only essential dependencies
 
@@ -18,6 +19,12 @@ parch sfw
 
 # Fetch and apply random NSFW wallpaper
 parch nsfw
+
+# Use random wallpaper from any local collection (no internet required)
+parch local
+
+# Use random local SFW wallpaper
+parch local sfw
 
 # Download specific post by ID
 parch id 123456

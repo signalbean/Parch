@@ -20,6 +20,30 @@ parch nsfw
 
 Fetches a random NSFW wallpaper from Konachan. These are stored in a separate folder.
 
+### Use Any Local Wallpaper
+
+```bash
+parch local
+```
+
+Randomly selects and applies a wallpaper from **any** of your local collections (both SFW and NSFW). No internet connection required. This is perfect for maximum variety!
+
+### Use Local SFW Wallpaper
+
+```bash
+parch local sfw
+```
+
+Randomly selects and applies a wallpaper from your local SFW collection only. No internet connection required.
+
+### Use Local NSFW Wallpaper
+
+```bash
+parch local nsfw
+```
+
+Randomly selects and applies a wallpaper from your local NSFW collection only. No internet connection required.
+
 ### Download Specific Post
 
 ```bash
@@ -32,7 +56,8 @@ Downloads and sets a specific wallpaper by its Konachan post ID.
 
 ```bash
 parch sfw -V
-parch nsfw verbose
+parch local verbose
+parch local nsfw verbose
 parch id 123456 -V
 ```
 
@@ -93,16 +118,54 @@ This makes it easy to:
 
 ## 💡 Tips & Tricks
 
+### Using Local Mode
+
+The `local` command has three modes:
+
+1. **`parch local`** - Random from **all** collections (maximum variety)
+2. **`parch local sfw`** - Random from SFW only (safe for work)
+3. **`parch local nsfw`** - Random from NSFW only (private use)
+
+The `local` command is perfect for:
+- **Offline use**: No internet connection needed
+- **Quick switching**: Instantly change wallpapers from your collection
+- **Rotation scripts**: Create randomized wallpaper rotations
+- **Favorite collections**: Curate your own collection and cycle through it
+- **Surprise mode**: Use `parch local` to get wallpapers from anywhere in your collection
+
+**Example workflow:**
+```bash
+# Download wallpapers to both collections
+parch sfw
+parch sfw
+parch nsfw
+parch nsfw
+
+# Use any wallpaper randomly
+parch local
+
+# Or be specific
+parch local sfw
+parch local nsfw
+```
+
 ### Automation
 
 **Linux (cron):**
 ```bash
 # Add to crontab (crontab -e)
-# New wallpaper every hour
-0 * * * * ~/~.cargo/bin/parch sfw
+# Random wallpaper from any collection every hour
+0 * * * * ~/.cargo/bin/parch local
+
+# Mix of new downloads and local wallpapers
+0 */2 * * * ~/.cargo/bin/parch sfw          # Download new every 2 hours
+30 * * * * ~/.cargo/bin/parch local         # Use any local every hour at :30
+
+# SFW only rotation
+0 * * * * ~/.cargo/bin/parch local sfw
 
 # New wallpaper every day at 9 AM
-0 9 * * * ~/~usr/local/bin/parch sfw
+0 9 * * * /usr/local/bin/parch sfw
 ```
 
 **Windows (Task Scheduler):**
@@ -111,20 +174,24 @@ This makes it easy to:
 3. Set trigger (e.g., daily, on login)
 4. Action: Start a program
 5. Program: `C:\Tools\parch.exe`
-6. Arguments: `sfw`
+6. Arguments: `local` (for any collection) or `local sfw` (for SFW only)
 
 ### Integration with Window Managers
 
 **i3wm example (~/.config/i3/config):**
 ```
-bindsym $mod+w exec parch sfw
+bindsym $mod+w exec parch local
+bindsym $mod+Shift+w exec parch sfw
+bindsym $mod+Control+w exec parch local sfw
 ```
 
 **Keybinding for quick wallpaper change:**
 ```bash
 # Add to your shell config
-alias wallpaper='parch sfw'
-alias wp='parch sfw'
+alias wallpaper='parch local'
+alias sfwpaper='parch local sfw'
+alias newpaper='parch sfw'
+alias wp='parch local'
 ```
 
 ### Finding Post IDs
@@ -137,12 +204,28 @@ If you found a wallpaper you like on Konachan:
 
 ## 🐛 Troubleshooting
 
+### No local wallpapers found
+
+```bash
+# Check if directory exists and has images
+ls ~/Pictures/Parch/         # Linux
+dir %USERPROFILE%\Pictures\Parch\  # Windows
+
+# Download some wallpapers first
+parch sfw
+parch sfw
+parch sfw
+
+# Then try local mode
+parch local
+```
+
 ### Wallpaper not setting
 
 **Linux:**
 ```bash
 # Check which desktop environment is detected
-parch sfw -V
+parch local -V
 
 # Try installing feh as fallback
 sudo apt install feh  # Debian/Ubuntu
@@ -157,6 +240,9 @@ sudo apt install feh  # Debian/Ubuntu
 ```bash
 # Use verbose mode to see detailed error
 parch sfw -V
+
+# If offline, use local mode instead
+parch local
 
 # Check your internet connection
 # Verify Konachan is accessible
@@ -181,6 +267,8 @@ mkdir -p ~/Pictures/Parch/
 - Use `nsfw` only in appropriate private settings
 - NSFW content is automatically stored in a separate folder
 - Review the images before using in shared/work environments
+- `local` mode with no category will randomly select from **both** SFW and NSFW collections
+- Use `local sfw` if you want to ensure only safe-for-work wallpapers in shared environments
 
 ## 🔄 Managing Your Collection
 
@@ -199,6 +287,23 @@ ls -lh ~/Pictures/Parch/
 
 # View with image viewer
 feh ~/Pictures/Parch/
+```
+
+### Building a curated collection
+
+```bash
+# Download multiple wallpapers to different collections
+for i in {1..10}; do parch sfw; sleep 2; done
+for i in {1..5}; do parch nsfw; sleep 2; done
+
+# Review them manually
+feh ~/Pictures/Parch/  # Linux
+explorer %USERPROFILE%\Pictures\Parch  # Windows
+
+# Delete unwanted ones, keep favorites
+# Then use local mode to cycle through your curated collection
+parch local  # Random from all
+parch local sfw  # Only SFW
 ```
 
 ### Cleaning up

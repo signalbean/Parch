@@ -11,10 +11,11 @@ Parch/
 │   ├── cli.rs           # Command-line argument parsing
 │   ├── api.rs           # Konachan API interaction
 │   ├── download.rs      # Image downloading and storage
+│   ├── local.rs         # Local wallpaper selection
 │   └── wallpaper.rs     # Cross-platform wallpaper setting
 ├── .github/workflows/   # CI/CD and release automation
-├── Cargo.toml          # Project configuration
-└── README.md           # Project overview
+├── Cargo.toml           # Project configuration
+└── README.md            # Project overview
 ```
 
 ## 🔧 Development Setup
@@ -53,6 +54,7 @@ cargo run -- sfw
 
 # Test different commands
 cargo run -- nsfw
+cargo run -- local sfw
 cargo run -- id 123456
 cargo run -- help
 ```
@@ -83,6 +85,7 @@ cargo run -- help
 - **Platform support**: Additional desktop environments or operating systems
 - **Documentation**: Improvements to docs, examples, or code comments
 - **Tests**: Additional test coverage
+- **Feature enhancements**: Like improved local mode capabilities
 
 ## ⚡ Performance Guidelines
 
@@ -93,6 +96,7 @@ When contributing code, keep these things in mind:
 - **Efficient networking**: Streamlined HTTP operations
 - **Fast startup**: Optimize argument parsing and initialization
 - **Memory efficiency**: Minimize allocations where possible
+- **Quick file operations**: Efficient directory scanning for local mode
 
 ## 🖥️ Platform-Specific Contributions
 
@@ -112,6 +116,15 @@ Contributions for Windows-specific features should:
 - Use native Windows APIs where possible
 - Maintain compatibility with Windows 10 and 11
 - Test on both platforms if possible
+
+### Local Mode Enhancements
+
+Ideas for improving local mode:
+
+- Better randomization algorithms
+- Caching for faster repeated access
+- Filtering options (by size, aspect ratio, etc.)
+- History tracking to avoid recent repeats
 
 ## 📄 License
 
