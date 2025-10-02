@@ -1,6 +1,7 @@
 mod api;
 mod cli;
 mod download;
+mod local;
 mod wallpaper;
 
 use std::error::Error;
@@ -16,17 +17,31 @@ fn main() {
 
 fn run() -> Result<()> {
     let args = cli::parse()?;
-    let post = api::fetch(&args)?;
-    let url = api::image_url(&post)?;
-    let full_url = if url.starts_with("//") {
-        format!("https:{}", url)
-    } else if !url.starts_with("http") {
-        format!("https://{}", url)
+
+    let path = if args.local {
+        // Use local wallpaper
+        if args.local_random {
+            // Random from any collection (sfw or nsfw)
+            local::get_random_any(args.verbose)?
+        } else {
+            // Specific collection
+            local::get_random(args.nsfw, args.verbose)?
+        }
     } else {
-        url.to_string()
+        // Fetch from Konachan
+        let post = api::fetch(&args)?;
+        let url = api::image_url(&post)?;
+        let full_url = if url.starts_with("//") {
+            format!("https:{}", url)
+        } else if !url.starts_with("http") {
+            format!("https://{}", url)
+        } else {
+            url.to_string()
+        };
+
+        download::save(post.id, &full_url, post.rating == "e", args.verbose)?
     };
 
-    let path = download::save(post.id, &full_url, post.rating == "e", args.verbose)?;
     wallpaper::set(&path, args.verbose)?;
 
     if args.verbose {

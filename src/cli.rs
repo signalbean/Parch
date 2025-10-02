@@ -2,6 +2,8 @@ pub struct Args {
     pub nsfw: bool,
     pub id: Option<u64>,
     pub verbose: bool,
+    pub local: bool,
+    pub local_random: bool,
 }
 
 const VERSION: &str = env!("CARGO_PKG_VERSION");
@@ -18,6 +20,8 @@ pub fn parse() -> Result<Args, String> {
     let mut sfw = false;
     let mut id = None;
     let mut verbose = false;
+    let mut local = false;
+    let mut local_random = false;
     let mut i = 0;
 
     while i < args.len() {
@@ -32,6 +36,16 @@ pub fn parse() -> Result<Args, String> {
             }
             "nsfw" => nsfw = true,
             "sfw" => sfw = true,
+            "local" => {
+                local = true;
+                // Check if next arg is sfw/nsfw or if it's standalone
+                if i + 1 < args.len() && (args[i + 1] == "sfw" || args[i + 1] == "nsfw") {
+                    // Will be handled in next iteration
+                } else {
+                    // Standalone local command - random from both
+                    local_random = true;
+                }
+            }
             "-V" | "verbose" => verbose = true,
             "id" => {
                 i += 1;
@@ -49,11 +63,21 @@ pub fn parse() -> Result<Args, String> {
         return Err("Cannot use nsfw and sfw together".into());
     }
 
-    if id.is_none() && !nsfw && !sfw {
-        return Err("Please provide a post ID with id or a category with sfw / nsfw".into());
+    if local && id.is_some() {
+        return Err("Cannot use local with id".into());
     }
 
-    Ok(Args { nsfw, id, verbose })
+    if !local && id.is_none() && !nsfw && !sfw {
+        return Err("Please provide a post ID with id or a type sfw/nsfw".into());
+    }
+
+    Ok(Args {
+        nsfw,
+        id,
+        verbose,
+        local,
+        local_random,
+    })
 }
 
 fn print_help() {
@@ -61,10 +85,11 @@ fn print_help() {
     println!("Fetch and apply wallpapers from Konachan\n");
     println!("USAGE:\n    {} [OPTIONS]\n", NAME);
     println!("OPTIONS:");
-    println!("    sfw            Fetch SFW images");
-    println!("    nsfw           Fetch NSFW images");
-    println!("    id <ID>        Download specific post");
-    println!("    -V, verbose    Verbose output");
-    println!("    -h, help       Show help");
-    println!("    -v, version    Show version");
+    println!("    sfw                  Fetch SFW images");
+    println!("    nsfw                 Fetch NSFW images");
+    println!("    local <type>         Use image from a local folder");
+    println!("    id <ID>              Fetch specific post");
+    println!("    -V, verbose          Verbose output");
+    println!("    -h, help             Show help");
+    println!("    -v, version          Show version");
 }
