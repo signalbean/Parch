@@ -3,7 +3,6 @@ pub struct Args {
     pub id: Option<u64>,
     pub verbose: bool,
     pub local: bool,
-    pub local_random: bool,
 }
 
 const VERSION: &str = env!("CARGO_PKG_VERSION");
@@ -21,7 +20,6 @@ pub fn parse() -> Result<Args, String> {
     let mut id = None;
     let mut verbose = false;
     let mut local = false;
-    let mut local_random = false;
     let mut i = 0;
 
     while i < args.len() {
@@ -38,13 +36,6 @@ pub fn parse() -> Result<Args, String> {
             "sfw" => sfw = true,
             "local" => {
                 local = true;
-                // Check if next arg is sfw/nsfw or if it's standalone
-                if i + 1 < args.len() && (args[i + 1] == "sfw" || args[i + 1] == "nsfw") {
-                    // Will be handled in next iteration
-                } else {
-                    // Standalone local command - random from both
-                    local_random = true;
-                }
             }
             "-V" | "verbose" => verbose = true,
             "id" => {
@@ -76,7 +67,6 @@ pub fn parse() -> Result<Args, String> {
         id,
         verbose,
         local,
-        local_random,
     })
 }
 
@@ -87,7 +77,7 @@ fn print_help() {
     println!("OPTIONS:");
     println!("    sfw                  Fetch SFW images");
     println!("    nsfw                 Fetch NSFW images");
-    println!("    local [type]         Use image from a local folder (sfw/nsfw)");
+    println!("    local <TYPE>         Use image from a local folder");
     println!("    id <ID>              Fetch specific post");
     println!("    -V, verbose          Verbose output");
     println!("    -h, help             Show help");

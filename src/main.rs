@@ -20,13 +20,7 @@ fn run() -> Result<()> {
 
     let path = if args.local {
         // Use local wallpaper
-        if args.local_random {
-            // Random from any collection (sfw or nsfw)
-            local::get_random_any(args.verbose)?
-        } else {
-            // Specific collection
-            local::get_random(args.nsfw, args.verbose)?
-        }
+        local::get_random(args.nsfw, args.verbose)?
     } else {
         // Fetch from Konachan
         let post = api::fetch(&args)?;
