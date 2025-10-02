@@ -4,10 +4,6 @@ mod download;
 mod local;
 mod wallpaper;
 
-use std::error::Error;
-
-type Result<T> = std::result::Result<T, Box<dyn Error>>;
-
 fn main() {
     if let Err(e) = run() {
         eprintln!("Error: {}", e);
@@ -15,7 +11,7 @@ fn main() {
     }
 }
 
-fn run() -> Result<()> {
+fn run() -> Result<(), String> {
     let args = cli::parse()?;
 
     let path = if args.local {

@@ -2,9 +2,7 @@ use std::fs::{File, create_dir_all};
 use std::io::copy;
 use std::path::PathBuf;
 
-type Result<T> = std::result::Result<T, Box<dyn std::error::Error>>;
-
-pub fn save(id: u64, url: &str, nsfw: bool, verbose: bool) -> Result<PathBuf> {
+pub fn save(id: u64, url: &str, nsfw: bool, verbose: bool) -> Result<PathBuf, String> {
     let dir = dir_path(nsfw)?;
     let ext = url
         .rsplit('/')
@@ -26,11 +24,11 @@ pub fn save(id: u64, url: &str, nsfw: bool, verbose: bool) -> Result<PathBuf> {
         .call()
         .map_err(|e| format!("Download failed: {}", e))?;
 
-    let mut file = File::create(&dest)?;
-    let bytes = copy(&mut resp.into_body().into_reader(), &mut file)?;
+    let mut file = File::create(&dest).map_err(|e| e.to_string())?;
+    let bytes = copy(&mut resp.into_body().into_reader(), &mut file).map_err(|e| e.to_string())?;
 
     if bytes == 0 {
-        return Err("Empty file".into());
+        return Err("Empty file".to_string());
     }
 
     if verbose {
@@ -40,7 +38,7 @@ pub fn save(id: u64, url: &str, nsfw: bool, verbose: bool) -> Result<PathBuf> {
     dest.canonicalize().or(Ok(dest))
 }
 
-fn dir_path(nsfw: bool) -> Result<PathBuf> {
+fn dir_path(nsfw: bool) -> Result<PathBuf, String> {
     let mut path = if cfg!(windows) {
         let userprofile = std::env::var("USERPROFILE")
             .or_else(|_| {
@@ -48,10 +46,10 @@ fn dir_path(nsfw: bool) -> Result<PathBuf> {
                     std::env::var("HOMEPATH").map(|path| format!("{}{}", drive, path))
                 })
             })
-            .map_err(|_| "User directory not found")?;
+            .map_err(|_| "User directory not found".to_string())?;
         PathBuf::from(userprofile)
     } else {
-        let home = std::env::var("HOME").map_err(|_| "HOME not set")?;
+        let home = std::env::var("HOME").map_err(|_| "HOME not set".to_string())?;
         PathBuf::from(home)
     };
 
@@ -61,6 +59,6 @@ fn dir_path(nsfw: bool) -> Result<PathBuf> {
         path.push("Nsfw");
     }
 
-    create_dir_all(&path)?;
+    create_dir_all(&path).map_err(|e| e.to_string())?;
     Ok(path)
 }

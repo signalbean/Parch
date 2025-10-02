@@ -9,21 +9,22 @@ const VERSION: &str = env!("CARGO_PKG_VERSION");
 const NAME: &str = env!("CARGO_PKG_NAME");
 
 pub fn parse() -> Result<Args, String> {
-    let args: Vec<String> = std::env::args().skip(1).collect();
+    let mut args = std::env::args().skip(1);
 
-    if args.is_empty() {
-        return Err(format!("No arguments.\nTry '{} help'", NAME));
-    }
+    let first = match args.next() {
+        Some(arg) => arg,
+        None => return Err(format!("No arguments.\nTry '{} help'", NAME)),
+    };
 
     let mut nsfw = false;
     let mut sfw = false;
     let mut id = None;
     let mut verbose = false;
     let mut local = false;
-    let mut i = 0;
 
-    while i < args.len() {
-        match args[i].as_str() {
+    let mut current = Some(first);
+    while let Some(arg) = current {
+        match arg.as_str() {
             "-h" | "help" => {
                 print_help();
                 std::process::exit(0);
@@ -39,15 +40,12 @@ pub fn parse() -> Result<Args, String> {
             }
             "-V" | "verbose" => verbose = true,
             "id" => {
-                i += 1;
-                if i >= args.len() {
-                    return Err("id requires a value".into());
-                }
-                id = Some(args[i].parse().map_err(|_| "Invalid post ID")?);
+                let id_str = args.next().ok_or("id requires a value")?;
+                id = Some(id_str.parse().map_err(|_| "Invalid post ID")?);
             }
-            _ => return Err(format!("Unknown: {}\nTry '{} help'", args[i], NAME)),
+            _ => return Err(format!("Unknown: {}\nTry '{} help'", arg, NAME)),
         }
-        i += 1;
+        current = args.next();
     }
 
     if nsfw && sfw {
