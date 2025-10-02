@@ -5,22 +5,14 @@ pub struct Args {
     pub local: bool,
 }
 
-const VERSION: &str = env!("CARGO_PKG_VERSION");
-const NAME: &str = env!("CARGO_PKG_NAME");
-
 pub fn parse() -> Result<Args, String> {
     let mut args = std::env::args().skip(1);
+    let first = args.next().ok_or(format!(
+        "No arguments.\nTry '{} help'",
+        env!("CARGO_PKG_NAME")
+    ))?;
 
-    let first = match args.next() {
-        Some(arg) => arg,
-        None => return Err(format!("No arguments.\nTry '{} help'", NAME)),
-    };
-
-    let mut nsfw = false;
-    let mut sfw = false;
-    let mut id = None;
-    let mut verbose = false;
-    let mut local = false;
+    let (mut nsfw, mut sfw, mut id, mut verbose, mut local) = (false, false, None, false, false);
 
     let mut current = Some(first);
     while let Some(arg) = current {
@@ -30,20 +22,28 @@ pub fn parse() -> Result<Args, String> {
                 std::process::exit(0);
             }
             "-v" | "version" => {
-                println!("{} {}", NAME, VERSION);
+                println!("{} {}", env!("CARGO_PKG_NAME"), env!("CARGO_PKG_VERSION"));
                 std::process::exit(0);
             }
             "nsfw" => nsfw = true,
             "sfw" => sfw = true,
-            "local" => {
-                local = true;
-            }
+            "local" => local = true,
             "-V" | "verbose" => verbose = true,
             "id" => {
-                let id_str = args.next().ok_or("id requires a value")?;
-                id = Some(id_str.parse().map_err(|_| "Invalid post ID")?);
+                id = Some(
+                    args.next()
+                        .ok_or("id requires a value")?
+                        .parse()
+                        .map_err(|_| "Invalid post ID")?,
+                )
             }
-            _ => return Err(format!("Unknown: {}\nTry '{} help'", arg, NAME)),
+            _ => {
+                return Err(format!(
+                    "Unknown: {}\nTry '{} help'",
+                    arg,
+                    env!("CARGO_PKG_NAME")
+                ));
+            }
         }
         current = args.next();
     }
@@ -51,11 +51,9 @@ pub fn parse() -> Result<Args, String> {
     if nsfw && sfw {
         return Err("Cannot use nsfw and sfw together".into());
     }
-
     if local && id.is_some() {
         return Err("Cannot use local with id".into());
     }
-
     if id.is_none() && !nsfw && !sfw {
         return Err("Please provide a post ID with id or a type sfw/nsfw".into());
     }
@@ -69,13 +67,13 @@ pub fn parse() -> Result<Args, String> {
 }
 
 fn print_help() {
-    println!("{} v{}", NAME, VERSION);
+    println!("{} v{}", env!("CARGO_PKG_NAME"), env!("CARGO_PKG_VERSION"));
     println!("Fetch and apply wallpapers from Konachan\n");
-    println!("USAGE:\n    {} [OPTIONS]\n", NAME);
+    println!("USAGE:\n    {} [OPTIONS]\n", env!("CARGO_PKG_NAME"));
     println!("OPTIONS:");
     println!("    sfw                  Fetch SFW images");
     println!("    nsfw                 Fetch NSFW images");
-    println!("    local <TYPE>         Use image from a local folder");
+    println!("    local <TYPE>         Use downloaded images");
     println!("    id <ID>              Fetch specific post");
     println!("    -V, verbose          Verbose output");
     println!("    -h, help             Show help");
