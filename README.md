@@ -36,7 +36,7 @@ parch id 123456
 * [Install](docs/installation.md)
 * [Usage](docs/usage.md)
 * [Platform Support](docs/platform-support.md)
-* [Contributing](CONTRIBUTING.md)
+* [Contributing](docs/contributing.md)
 
 ## 📦 Install
 
@@ -59,7 +59,7 @@ See [Platform Support](docs/platform-support.md) for more.
 
 ## 🤝 Contributing
 
-PRs welcome! Check [CONTRIBUTING.md](CONTRIBUTING.md).
+PRs welcome! Check [conrtibuting.md](docs/contributing.md).
 
 ## 📄 License
 
