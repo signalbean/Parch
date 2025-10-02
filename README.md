@@ -1,7 +1,7 @@
 # Parch
 
 A fast CLI for fetching and applying wallpapers from Konachan.
-Built with Rust → lightweight, cross-platform, zero-nonsense.
+Built with Rust → lightweight.
 
 ## ✨ Features
 
