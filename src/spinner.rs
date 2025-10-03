@@ -1,8 +1,6 @@
 use std::io::{self, Write};
-use std::sync::{
-    Arc,
-    atomic::{AtomicBool, Ordering},
-};
+use std::sync::Arc;
+use std::sync::atomic::{AtomicBool, Ordering};
 use std::thread;
 use std::time::Duration;
 
@@ -28,8 +26,9 @@ impl SpinnerGuard {
                 thread::sleep(Duration::from_millis(80));
             }
 
-            // Clean up the line once stopped
-            print!("\r{}\r", " ".repeat(message.len() + 4));
+            // Clear the entire line without leaving a newline
+            let clear_len = message.len() + 4;
+            print!("\r{}\r", " ".repeat(clear_len));
             io::stdout().flush().unwrap();
         });
 

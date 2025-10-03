@@ -22,74 +22,96 @@ pub fn set(path: &Path, verbose: bool) -> Result<(), String> {
         if verbose {
             println!("→ Using Windows API");
         }
-        let wide: Vec<u16> = OsStr::new(path)
-            .encode_wide()
-            .chain(std::iter::once(0))
-            .collect();
-        unsafe {
-            if SystemParametersInfoW(
-                SPI_SETDESKWALLPAPER,
-                0,
-                wide.as_ptr() as *mut _,
-                SPIF_UPDATEINIFILE | SPIF_SENDCHANGE,
-            ) == 0
-            {
-                return Err("Failed to set wallpaper".into());
-            }
-        }
-        return Ok(());
+        set_windows_wallpaper(path)
     }
 
     #[cfg(not(windows))]
-    {
-        let p = path.to_string_lossy();
-        let uri = format!(
-            "file://{}",
-            if let Some(stripped) = p.strip_prefix("file://") {
-                stripped
-            } else {
-                &p
-            }
-        );
+    set_unix_wallpaper(path, verbose)
+}
 
-        if let Some(q) = find(&["qdbus", "qdbus-qt5", "qdbus6"]) {
-            if verbose {
-                println!("→ Using KDE Plasma ({})", q);
-            }
-            if run(&q, &["org.kde.plasmashell", "/PlasmaShell", "org.kde.PlasmaShell.evaluateScript",
-                &format!("var d=desktops();for(i=0;i<d.length;i++){{d[i].wallpaperPlugin=\"org.kde.image\";d[i].currentConfigGroup=[\"Wallpaper\",\"org.kde.image\",\"General\"];d[i].writeConfig(\"Image\",\"{}\")}}", uri)
-            ]).is_ok() { return Ok(()); }
+#[cfg(windows)]
+fn set_windows_wallpaper(path: &Path) -> Result<(), String> {
+    let wide: Vec<u16> = OsStr::new(path)
+        .encode_wide()
+        .chain(std::iter::once(0))
+        .collect();
+
+    unsafe {
+        if SystemParametersInfoW(
+            SPI_SETDESKWALLPAPER,
+            0,
+            wide.as_ptr() as *mut _,
+            SPIF_UPDATEINIFILE | SPIF_SENDCHANGE,
+        ) == 0
+        {
+            return Err("Failed to set wallpaper".into());
         }
-
-        if exists("gsettings") {
-            if verbose {
-                println!("→ Using GNOME");
-            }
-            if run(
-                "gsettings",
-                &["set", "org.gnome.desktop.background", "picture-uri", &uri],
-            )
-            .is_ok()
-            {
-                return Ok(());
-            }
-        }
-
-        if exists("feh") {
-            if verbose {
-                println!("→ Using feh");
-            }
-            if run("feh", &["--bg-fill", &p]).is_ok() {
-                return Ok(());
-            }
-        }
-
-        Err("No wallpaper setter found".into())
     }
+    Ok(())
 }
 
 #[cfg(not(windows))]
-fn run(cmd: &str, args: &[&str]) -> Result<(), String> {
+fn set_unix_wallpaper(path: &Path, verbose: bool) -> Result<(), String> {
+    let path_str = path.to_string_lossy();
+    let uri = format!(
+        "file://{}",
+        path_str.strip_prefix("file://").unwrap_or(&path_str)
+    );
+
+    if let Some(q) = find_command(&["qdbus", "qdbus-qt5", "qdbus6"]) {
+        if verbose {
+            println!("→ Using KDE Plasma ({})", q);
+        }
+        if try_kde(&q, &uri).is_ok() {
+            return Ok(());
+        }
+    }
+
+    if command_exists("gsettings") {
+        if verbose {
+            println!("→ Using GNOME");
+        }
+        if run_command(
+            "gsettings",
+            &["set", "org.gnome.desktop.background", "picture-uri", &uri],
+        )
+        .is_ok()
+        {
+            return Ok(());
+        }
+    }
+
+    if command_exists("feh") {
+        if verbose {
+            println!("→ Using feh");
+        }
+        if run_command("feh", &["--bg-fill", &path_str]).is_ok() {
+            return Ok(());
+        }
+    }
+
+    Err("No wallpaper setter found".into())
+}
+
+#[cfg(not(windows))]
+fn try_kde(qdbus: &str, uri: &str) -> Result<(), String> {
+    let script = format!(
+        "var d=desktops();for(i=0;i<d.length;i++){{d[i].wallpaperPlugin=\"org.kde.image\";d[i].currentConfigGroup=[\"Wallpaper\",\"org.kde.image\",\"General\"];d[i].writeConfig(\"Image\",\"{}\")}}",
+        uri
+    );
+    run_command(
+        qdbus,
+        &[
+            "org.kde.plasmashell",
+            "/PlasmaShell",
+            "org.kde.PlasmaShell.evaluateScript",
+            &script,
+        ],
+    )
+}
+
+#[cfg(not(windows))]
+fn run_command(cmd: &str, args: &[&str]) -> Result<(), String> {
     Command::new(cmd)
         .args(args)
         .status()
@@ -104,7 +126,7 @@ fn run(cmd: &str, args: &[&str]) -> Result<(), String> {
 }
 
 #[cfg(not(windows))]
-fn exists(cmd: &str) -> bool {
+fn command_exists(cmd: &str) -> bool {
     Command::new("sh")
         .args(["-c", &format!("command -v {}", cmd)])
         .output()
@@ -113,6 +135,8 @@ fn exists(cmd: &str) -> bool {
 }
 
 #[cfg(not(windows))]
-fn find(cmds: &[&str]) -> Option<String> {
-    cmds.iter().find(|&&c| exists(c)).map(|&s| s.to_string())
+fn find_command(cmds: &[&str]) -> Option<String> {
+    cmds.iter()
+        .find(|&&c| command_exists(c))
+        .map(|&s| s.to_string())
 }

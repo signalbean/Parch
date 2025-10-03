@@ -23,14 +23,18 @@ fn run() -> Result<(), String> {
             local::get_random(args.nsfw, args.verbose)?
         } else {
             let _spin = SpinnerGuard::new("Picking local wallpaper");
-            local::get_random(args.nsfw, false)?
+            let result = local::get_random(args.nsfw, false)?;
+            drop(_spin);
+            result
         }
     } else {
         let post = if args.verbose {
             api::fetch(args.id, args.nsfw, args.verbose)?
         } else {
             let _spin = SpinnerGuard::new("Fetching post");
-            api::fetch(args.id, args.nsfw, false)?
+            let result = api::fetch(args.id, args.nsfw, false)?;
+            drop(_spin);
+            result
         };
 
         let url = api::image_url(&post)?;
@@ -39,24 +43,22 @@ fn run() -> Result<(), String> {
             download::save(post.id, &url, post.rating == "e", args.verbose)?
         } else {
             let _spin = SpinnerGuard::new("Downloading image");
-            download::save(post.id, &url, post.rating == "e", false)?
+            let result = download::save(post.id, &url, post.rating == "e", false)?;
+            drop(_spin);
+            result
         }
     };
 
     if args.verbose {
         wallpaper::set(&path, args.verbose)?;
+        println!("✓ Wallpaper set successfully.");
     } else {
         let _spin = SpinnerGuard::new("Applying wallpaper");
         wallpaper::set(&path, false)?;
+        drop(_spin);
+        print!("✓ Applied!");
+        std::io::Write::flush(&mut std::io::stdout()).ok();
     }
 
-    println!(
-        "{}",
-        if args.verbose {
-            "✓ Wallpaper set successfully."
-        } else {
-            "✓ Applied!"
-        }
-    );
     Ok(())
 }
