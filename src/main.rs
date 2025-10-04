@@ -19,15 +19,13 @@ fn run() -> Result<(), String> {
         if args.verbose {
             local::get_random(args.nsfw, args.verbose)?
         } else {
-            let result = local::get_random(args.nsfw, false)?;
-            result
+            local::get_random(args.nsfw, false)?
         }
     } else {
         let post = if args.verbose {
             api::fetch(args.id, args.nsfw, args.verbose)?
         } else {
-            let result = api::fetch(args.id, args.nsfw, false)?;
-            result
+            api::fetch(args.id, args.nsfw, false)?
         };
 
         let url = api::image_url(&post)?;
@@ -35,8 +33,7 @@ fn run() -> Result<(), String> {
         if args.verbose {
             download::save(post.id, &url, post.rating == "e", args.verbose)?
         } else {
-            let result = download::save(post.id, &url, post.rating == "e", false)?;
-            result
+            download::save(post.id, &url, post.rating == "e", false)?
         }
     };
 
