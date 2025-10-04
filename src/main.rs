@@ -42,8 +42,7 @@ fn run() -> Result<(), String> {
         println!("✓ Wallpaper set successfully");
     } else {
         wallpaper::set(&path, false)?;
-        print!("✓ Applied");
-        std::io::Write::flush(&mut std::io::stdout()).ok();
+        println!("✓ Applied");
     }
 
     Ok(())
