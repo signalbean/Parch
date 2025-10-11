@@ -9,22 +9,6 @@ Built with Rust.
 * **Local mode**: Offline wallpapers from your `Parch` folder
 * **Rating aware**: SFW & NSFW handled separately
 
-## 🚀 Quick Start
-
-```bash
-# Random SFW wallpaper
-parch sfw
-
-# Random NSFW wallpaper
-parch nsfw
-
-# Local random (SFW only)
-parch local sfw
-
-# Fetch by ID
-parch id 123456
-```
-
 ## 📦 Install
 
 **Releases (recommended):**
