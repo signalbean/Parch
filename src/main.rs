@@ -37,13 +37,8 @@ fn run() -> Result<(), String> {
         }
     };
 
-    if args.verbose {
-        wallpaper::set(&path, args.verbose)?;
-        println!("✓ Wallpaper set successfully");
-    } else {
-        wallpaper::set(&path, false)?;
-        println!("✓ Applied");
-    }
+    wallpaper::set(&path, false)?;
+    println!("✓ Applied");
 
     Ok(())
 }

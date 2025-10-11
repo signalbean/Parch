@@ -9,21 +9,39 @@ endif
 all: build
 
 build:
-	@echo "Building $(PKG_NAME) in debug mode..."
-	cargo build
+    cargo build
 
 release:
-	@echo "Building $(PKG_NAME) in release mode..."
-	cargo build --release
+    cargo build --release
 
 release-upx: release
-	@echo "Compressing $(RELEASE_BIN) with UPX..."
-	upx --best --lzma $(RELEASE_BIN)
+    upx --best --lzma $(RELEASE_BIN)
+
+release-target:
+    cargo build --release --target x86_64-unknown-linux-musl
+
+run: build
+    cargo run
+
+run-release: release
+    $(RELEASE_BIN)
+
+test:
+    cargo test
+
+fmt-check:
+    cargo fmt -- --check
+
+fmt-apply:
+    cargo fmt
+
+clippy:
+    cargo clippy -- -D warnings
 
 install:
-	cargo install --path .
+    cargo install --path .
 
 clean:
-	cargo clean
+    cargo clean
 
-.PHONY: all build release release-upx clean run-sfw run-nsfw run-local-sfw run-local-nsfw run-id install
+.PHONY: all build release release-upx release-target run run-release test fmt-check fmt-apply clippy clean install run-sfw run-nsfw run-local-sfw run-local-nsfw run-id

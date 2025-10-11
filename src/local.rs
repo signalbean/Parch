@@ -2,7 +2,7 @@ use crate::paths::parch_dir;
 use std::fs::read_dir;
 use std::path::{Path, PathBuf};
 
-const IMAGE_EXTS: &[&str] = &["jpg", "jpeg", "png", "bmp"];
+const IMAGE_EXTS: &[&str] = &["jpg", "jpeg", "png"];
 
 pub fn get_random(nsfw: bool, verbose: bool) -> Result<PathBuf, String> {
     let dir = parch_dir(nsfw)?;
