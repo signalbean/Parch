@@ -9,7 +9,24 @@ pub struct Post {
 }
 
 pub fn fetch(id: Option<u64>, nsfw: bool, verbose: bool) -> Result<Post, String> {
-    let url = build_url(id, nsfw, verbose);
+    let url = match id {
+        Some(i) => {
+            if verbose {
+                println!("→ Fetching post ID {}", i)
+            }
+            format!("https://konachan.net/post.json?tags=id%3A{}", i)
+        }
+        None => {
+            let rating = if nsfw { "explicit" } else { "safe" };
+            if verbose {
+                println!("→ Fetching random {} post", rating)
+            }
+            format!(
+                "https://konachan.net/post.json?tags=rating%3A{}%20order%3Arandom&limit=1",
+                rating
+            )
+        }
+    };
 
     let buf = ureq::get(&url)
         .header("User-Agent", "parch")
@@ -33,39 +50,11 @@ pub fn image_url(post: &Post) -> Result<String, String> {
         .or(post.large_file_url.as_deref())
         .ok_or("No image URL")?;
 
-    Ok(normalize_url(url))
-}
-
-fn build_url(id: Option<u64>, nsfw: bool, verbose: bool) -> String {
-    match id {
-        Some(i) => {
-            if verbose {
-                println!("→ Fetching post ID {}", i);
-            }
-            format!("https://konachan.net/post.json?tags=id%3A{}", i)
-        }
-        None => {
-            if verbose {
-                println!(
-                    "→ Fetching random {} post",
-                    if nsfw { "explicit" } else { "safe" }
-                );
-            }
-            let rating = if nsfw { "explicit" } else { "safe" };
-            format!(
-                "https://konachan.net/post.json?tags=rating%3A{}%20order%3Arandom&limit=1",
-                rating
-            )
-        }
-    }
-}
-
-fn normalize_url(url: &str) -> String {
-    if url.starts_with("//") {
+    Ok(if url.starts_with("//") {
         format!("https:{}", url)
     } else if !url.starts_with("http") {
         format!("https://{}", url)
     } else {
         url.to_string()
-    }
+    })
 }

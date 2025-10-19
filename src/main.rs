@@ -16,28 +16,14 @@ fn run() -> Result<(), String> {
     let args = cli::parse()?;
 
     let path = if args.local {
-        if args.verbose {
-            local::get_random(args.nsfw, args.verbose)?
-        } else {
-            local::get_random(args.nsfw, false)?
-        }
+        local::get_random(args.nsfw, args.verbose)?
     } else {
-        let post = if args.verbose {
-            api::fetch(args.id, args.nsfw, args.verbose)?
-        } else {
-            api::fetch(args.id, args.nsfw, false)?
-        };
-
+        let post = api::fetch(args.id, args.nsfw, args.verbose)?;
         let url = api::image_url(&post)?;
-
-        if args.verbose {
-            download::save(post.id, &url, post.rating == "e", args.verbose)?
-        } else {
-            download::save(post.id, &url, post.rating == "e", false)?
-        }
+        download::save(post.id, &url, post.rating == "e", args.verbose)?
     };
 
-    wallpaper::set(&path, false)?;
+    wallpaper::set(&path, args.verbose)?;
     println!("✓ Applied");
 
     Ok(())

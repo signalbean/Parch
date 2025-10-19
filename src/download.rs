@@ -7,7 +7,14 @@ pub fn save(id: u64, url: &str, nsfw: bool, verbose: bool) -> Result<PathBuf, St
     let dir = parch_dir(nsfw)?;
     create_dir_all(&dir).map_err(|e| e.to_string())?;
 
-    let ext = extract_extension(url);
+    let ext = url
+        .rsplit('/')
+        .next()
+        .and_then(|n| n.split('?').next())
+        .and_then(|n| n.rsplit('.').next())
+        .filter(|e| !e.is_empty())
+        .unwrap_or("jpg");
+
     let dest = dir.join(format!("{}.{}", id, ext));
 
     if verbose {
@@ -30,17 +37,8 @@ pub fn save(id: u64, url: &str, nsfw: bool, verbose: bool) -> Result<PathBuf, St
         return Err("Empty file".to_string());
     }
     if verbose {
-        println!("→ Downloaded {} bytes", bytes);
+        println!("→ Downloaded {} bytes", bytes)
     }
 
     dest.canonicalize().or(Ok(dest))
-}
-
-fn extract_extension(url: &str) -> &str {
-    url.rsplit('/')
-        .next()
-        .and_then(|n| n.split('?').next())
-        .and_then(|n| n.rsplit('.').next())
-        .filter(|e| !e.is_empty())
-        .unwrap_or("jpg")
 }

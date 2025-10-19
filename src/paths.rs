@@ -17,7 +17,8 @@ pub fn parch_dir(nsfw: bool) -> Result<PathBuf, String> {
     path.push("Pictures");
     path.push("Parch");
     if nsfw {
-        path.push("Nsfw");
+        path.push("Nsfw")
     }
+
     Ok(path)
 }
