@@ -17,7 +17,7 @@ Download the latest binary [here](https://github.com/signalbean/Parch/releases/l
 **Cargo:**
 
 ```bash
-# no upx comp
+# no upx compression
 cargo install parch
 ```
 
