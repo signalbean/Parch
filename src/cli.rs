@@ -33,7 +33,7 @@ pub fn parse() -> Result<Args, String> {
                     args.next()
                         .ok_or("id requires a value")?
                         .parse()
-                        .map_err(|_| "Invalid post ID")?,
+                        .map_err(|_| "Invalid ID")?,
                 )
             }
             _ => {
@@ -48,13 +48,13 @@ pub fn parse() -> Result<Args, String> {
     }
 
     if nsfw && sfw {
-        return Err("Cannot use nsfw and sfw together".into());
+        return Err("Can't use nsfw and sfw together".into());
     }
     if local && id.is_some() {
-        return Err("Cannot use local with id".into());
+        return Err("Can't use local with id".into());
     }
     if id.is_none() && !nsfw && !sfw {
-        return Err("Please provide a post ID with id or a type sfw/nsfw".into());
+        return Err("Post ID or a type sfw/nsfw is required".into());
     }
 
     Ok(Args {
@@ -68,13 +68,13 @@ pub fn parse() -> Result<Args, String> {
 fn print_help() {
     println!(
         "{} v{}\nFetch and apply wallpapers from Konachan\n\nUSAGE:\n    {} [OPTIONS]\n\nOPTIONS:\
-    \n    sfw                  Fetch SFW images\
-    \n    nsfw                 Fetch NSFW images\
-    \n    local <TYPE>         Use downloaded images\
-    \n    id <ID>              Fetch specific post\
-    \n    -V, verbose          Verbose output\
-    \n    -h, help             Show help\
-    \n    -v, version          Show version",
+    \n    sfw                  SFW images\
+    \n    nsfw                 NSFW images\
+    \n    local <TYPE>         Use local images\
+    \n    id <ID>              By post id\
+    \n    -V, verbose          Verbose mode\
+    \n    -h, help             Help menu\
+    \n    -v, version          Version",
         env!("CARGO_PKG_NAME"),
         env!("CARGO_PKG_VERSION"),
         env!("CARGO_PKG_NAME")

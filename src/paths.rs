@@ -8,7 +8,7 @@ pub fn parch_dir(nsfw: bool) -> Result<PathBuf, String> {
                     std::env::var("HOMEDRIVE")
                         .and_then(|d| std::env::var("HOMEPATH").map(|p| format!("{}{}", d, p)))
                 })
-                .map_err(|_| "User directory not found")?,
+                .map_err(|_| "Directory not found")?,
         )
     } else {
         PathBuf::from(std::env::var("HOME").map_err(|_| "HOME not set")?)

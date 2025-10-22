@@ -12,7 +12,7 @@ pub fn fetch(id: Option<u64>, nsfw: bool, verbose: bool) -> Result<Post, String>
     let url = match id {
         Some(i) => {
             if verbose {
-                println!("→ Fetching post ID {}", i)
+                println!("→ Fetching post by ID {}", i)
             }
             format!("https://konachan.net/post.json?tags=id%3A{}", i)
         }
