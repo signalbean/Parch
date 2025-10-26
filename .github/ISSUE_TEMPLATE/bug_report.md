@@ -1,5 +1,5 @@
 ---
-name: 🐞 Bug Report
+name: Bug Report
 about: Help us squash some bugs
 title: "[BUG] "
 labels: bug
@@ -7,23 +7,29 @@ assignees: ''
 ---
 
 ## Bug Description
-What went wrong? (short & clean)
+<!-- What went wrong? Keep it short & clean -->
 
 ## Steps to Reproduce
-1. Command run: `...`
-2. Arguments: `...`
-3. Then... 💥
+<!-- Give some background if needed, like:
+- What were you trying to do?
+- Where did you get stuck?
+- Any related links/docs you already checked?
+- Command run and arguments used
+- What happened next? -->
 
 ## Expected vs Actual
-- Expected: ...
-- Actual: ...
+<!-- 
+- Expected: What you thought would happen
+- Actual: What actually happened
+-->
 
 ## Environment
+<!-- 
 - OS: [e.g. Ubuntu 22.04]
 - DE/WM: [e.g. GNOME, KDE, i3]
 - Parch: `parch --version`
 - Rust: `rustc --version` (if applicable)
+-->
 
 ## Error / Verbose Output
-
-Paste logs or error here
+<!-- Paste logs or error output here -->
