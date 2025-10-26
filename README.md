@@ -33,11 +33,3 @@ MIT - see [LICENSE](LICENSE).
 ## Content Notice
 
 Parch pulls from Konachan. Ratings matter – use flags responsibly.
-
----
-
-<div align="center">
-
-**Made in Rust**
-
-</div>
