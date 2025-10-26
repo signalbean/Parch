@@ -1,54 +1,77 @@
 use crate::paths::parch_dir;
-use std::fs::read_dir;
+use std::fs;
 use std::path::PathBuf;
 
-const IMAGE_EXTS: &[&str] = &["jpg", "jpeg", "png"];
+const IMAGE_EXTENSIONS: &[&str] = &["jpg", "jpeg", "png"];
 
-pub fn get_random(nsfw: bool, verbose: bool) -> Result<PathBuf, String> {
+pub fn get_random(nsfw: bool, verbose: bool) -> Result<PathBuf, Box<dyn std::error::Error>> {
     let dir = parch_dir(nsfw)?;
 
     if verbose {
-        println!("→ Scanning directory: {}", dir.display())
-    }
-    if !dir.exists() {
-        return Err(format!("Directory not found: {}", dir.display()));
+        println!("→ Scanning directory: {}", dir.display());
     }
 
-    let mut images: Vec<_> = read_dir(&dir)
-        .map_err(|e| e.to_string())?
-        .filter_map(|e| e.ok())
-        .map(|e| e.path())
-        .filter(|p| {
-            p.is_file()
-                && p.extension()
-                    .and_then(|e| e.to_str())
-                    .map(|e| IMAGE_EXTS.contains(&e.to_lowercase().as_str()))
-                    .unwrap_or(false)
-        })
-        .collect();
+    if !dir.exists() {
+        return Err(format!("Directory not found: {}", dir.display()).into());
+    }
+
+    let images = collect_images(&dir)?;
 
     if images.is_empty() {
+        let category = if nsfw { "nsfw" } else { "sfw" };
         return Err(format!(
             "No wallpapers found in {}. Download some first with 'parch {}'",
             dir.display(),
-            if nsfw { "nsfw" } else { "sfw" }
-        ));
+            category
+        )
+        .into());
     }
 
     if verbose {
-        println!("→ Found {} wallpaper(s)", images.len())
+        println!("→ Found {} wallpaper(s)", images.len());
     }
 
-    let idx = (std::time::SystemTime::now()
-        .duration_since(std::time::UNIX_EPOCH)
-        .unwrap()
-        .as_secs() as usize)
-        % images.len();
+    let selected = select_random_image(images);
 
-    let selected = images.swap_remove(idx);
     if verbose {
-        println!("→ Selected: {}", selected.display())
+        println!("→ Selected: {}", selected.display());
     }
 
     Ok(selected)
+}
+
+fn collect_images(dir: &PathBuf) -> Result<Vec<PathBuf>, Box<dyn std::error::Error>> {
+    let mut images = Vec::new();
+
+    for entry in fs::read_dir(dir)? {
+        let entry = entry?;
+        let path = entry.path();
+
+        if path.is_file()
+            && let Some(extension) = path.extension()
+            && let Some(ext_str) = extension.to_str()
+            && IMAGE_EXTENSIONS.contains(&ext_str.to_lowercase().as_str())
+        {
+            images.push(path);
+        }
+    }
+
+    Ok(images)
+}
+
+fn select_random_image(images: Vec<PathBuf>) -> PathBuf {
+    use std::collections::hash_map::DefaultHasher;
+    use std::hash::{Hash, Hasher};
+    use std::time::{SystemTime, UNIX_EPOCH};
+
+    // Simple pseudo-random selection using system time
+    let mut hasher = DefaultHasher::new();
+    SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .unwrap()
+        .as_nanos()
+        .hash(&mut hasher);
+
+    let index = (hasher.finish() as usize) % images.len();
+    images[index].clone()
 }

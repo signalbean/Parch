@@ -5,6 +5,8 @@ mod local;
 mod paths;
 mod wallpaper;
 
+type Result<T> = std::result::Result<T, Box<dyn std::error::Error>>;
+
 fn main() {
     if let Err(e) = run() {
         eprintln!("Error: {}", e);
@@ -12,7 +14,7 @@ fn main() {
     }
 }
 
-fn run() -> Result<(), String> {
+fn run() -> Result<()> {
     let args = cli::parse()?;
 
     let path = if args.local {
@@ -25,6 +27,5 @@ fn run() -> Result<(), String> {
 
     wallpaper::set(&path, args.verbose)?;
     println!("✓ Applied");
-
     Ok(())
 }

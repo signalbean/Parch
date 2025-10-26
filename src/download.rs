@@ -3,18 +3,16 @@ use std::fs::{File, create_dir_all};
 use std::io::copy;
 use std::path::PathBuf;
 
-pub fn save(id: u64, url: &str, nsfw: bool, verbose: bool) -> Result<PathBuf, String> {
+pub fn save(
+    id: u64,
+    url: &str,
+    nsfw: bool,
+    verbose: bool,
+) -> Result<PathBuf, Box<dyn std::error::Error>> {
     let dir = parch_dir(nsfw)?;
-    create_dir_all(&dir).map_err(|e| e.to_string())?;
+    create_dir_all(&dir)?;
 
-    let ext = url
-        .rsplit('/')
-        .next()
-        .and_then(|n| n.split('?').next())
-        .and_then(|n| n.rsplit('.').next())
-        .filter(|e| !e.is_empty())
-        .unwrap_or("jpg");
-
+    let ext = extract_extension(url);
     let dest = dir.join(format!("{}.{}", id, ext));
 
     if verbose {
@@ -25,20 +23,27 @@ pub fn save(id: u64, url: &str, nsfw: bool, verbose: bool) -> Result<PathBuf, St
         );
     }
 
-    let resp = ureq::get(url)
-        .header("User-Agent", "parch")
-        .call()
-        .map_err(|e| format!("Download failed: {}", e))?;
+    let response = ureq::get(url).header("User-Agent", "parch").call()?;
 
-    let mut file = File::create(&dest).map_err(|e| e.to_string())?;
-    let bytes = copy(&mut resp.into_body().into_reader(), &mut file).map_err(|e| e.to_string())?;
+    let mut file = File::create(&dest)?;
+    let bytes = copy(&mut response.into_body().into_reader(), &mut file)?;
 
     if bytes == 0 {
-        return Err("Empty file".to_string());
-    }
-    if verbose {
-        println!("→ Downloaded {} bytes", bytes)
+        return Err("Downloaded file is empty".into());
     }
 
-    dest.canonicalize().or(Ok(dest))
+    if verbose {
+        println!("→ Downloaded {} bytes", bytes);
+    }
+
+    dest.canonicalize().or_else(|_| Ok(dest))
+}
+
+fn extract_extension(url: &str) -> &str {
+    url.rsplit('/')
+        .next()
+        .and_then(|filename| filename.split('?').next())
+        .and_then(|filename| filename.rsplit('.').next())
+        .filter(|ext| !ext.is_empty())
+        .unwrap_or("jpg")
 }
