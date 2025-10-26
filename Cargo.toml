@@ -9,6 +9,9 @@ repository = "https://github.com/signalbean/Parch"
 readme = "README.md"
 keywords = ["wallpaper", "image", "customization", "cli"]
 
+[[bin]]
+name = "parch"
+
 [dependencies]
 ureq = { version = "3.1.2", default-features = false, features = ["rustls"] }
 serde = { version = "1.0.228", default-features = false, features = ["derive"] }
