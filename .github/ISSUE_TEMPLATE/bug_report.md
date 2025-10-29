@@ -13,8 +13,6 @@ assignees: ''
 <!-- Give some background if needed, like:
 - What were you trying to do?
 - Where did you get stuck?
-- Any related links/docs you already checked?
-- Command run and arguments used
 - What happened next? -->
 
 ## Expected vs Actual
