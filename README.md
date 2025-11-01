@@ -1,6 +1,6 @@
 <div align="center">
 
-# Parch
+# parch
 
 **A cmd line tool for fetching and applying wallpapers from Konachan.**  
 *Built with Rust.*
